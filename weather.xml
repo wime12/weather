@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+		<rss version="2.0" xmlns:yweather="http://xml.weather.yahoo.com/ns/rss/1.0" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#">
+			<channel>
+		
+<title>Yahoo! Weather - Ratisbon, DE</title>
+<link>http://us.rd.yahoo.com/dailynews/rss/weather/Ratisbon__DE/*http://weather.yahoo.com/forecast/GMBY4551_c.html</link>
+<description>Yahoo! Weather for Ratisbon, DE</description>
+<language>en-us</language>
+<lastBuildDate>Thu, 23 Jul 2015 6:59 am CEST</lastBuildDate>
+<ttl>60</ttl>
+<yweather:location city="Ratisbon" region="BY"   country="Germany"/>
+<yweather:units temperature="C" distance="km" pressure="mb" speed="km/h"/>
+<yweather:wind chill="21"   direction="310"   speed="6.44" />
+<yweather:atmosphere humidity="82"  visibility=""  pressure="1013.2"  rising="1" />
+<yweather:astronomy sunrise="5:29 am"   sunset="9:01 pm"/>
+<image>
+<title>Yahoo! Weather</title>
+<width>142</width>
+<height>18</height>
+<link>http://weather.yahoo.com</link>
+<url>http://l.yimg.com/a/i/brand/purplelogo//uh/us/news-wea.gif</url>
+</image>
+<item>
+<title>Conditions for Ratisbon, DE at 6:59 am CEST</title>
+<geo:lat>49.01</geo:lat>
+<geo:long>12.06</geo:long>
+<link>http://us.rd.yahoo.com/dailynews/rss/weather/Ratisbon__DE/*http://weather.yahoo.com/forecast/GMBY4551_c.html</link>
+<pubDate>Thu, 23 Jul 2015 6:59 am CEST</pubDate>
+<yweather:condition  text="Mostly Cloudy"  code="28"  temp="21"  date="Thu, 23 Jul 2015 6:59 am CEST" />
+<description><![CDATA[
+<img src="http://l.yimg.com/a/i/us/we/52/28.gif"/><br />
+<b>Current Conditions:</b><br />
+Mostly Cloudy, 21 C<BR />
+<BR /><b>Forecast:</b><BR />
+Thu - AM Showers. High: 29 Low: 17<br />
+Fri - Partly Cloudy. High: 32 Low: 19<br />
+Sat - Thunderstorms. High: 29 Low: 11<br />
+Sun - Sunny. High: 26 Low: 14<br />
+Mon - Showers. High: 26 Low: 13<br />
+<br />
+<a href="http://us.rd.yahoo.com/dailynews/rss/weather/Ratisbon__DE/*http://weather.yahoo.com/forecast/GMBY4551_c.html">Full Forecast at Yahoo! Weather</a><BR/><BR/>
+(provided by <a href="http://www.weather.com" >The Weather Channel</a>)<br/>
+]]></description>
+<yweather:forecast day="Thu" date="23 Jul 2015" low="17" high="29" text="AM Showers" code="39" />
+<yweather:forecast day="Fri" date="24 Jul 2015" low="19" high="32" text="Partly Cloudy" code="30" />
+<yweather:forecast day="Sat" date="25 Jul 2015" low="11" high="29" text="Thunderstorms" code="4" />
+<yweather:forecast day="Sun" date="26 Jul 2015" low="14" high="26" text="Sunny" code="32" />
+<yweather:forecast day="Mon" date="27 Jul 2015" low="13" high="26" text="Showers" code="11" />
+<guid isPermaLink="false">GMBY4551_2015_07_27_7_00_CEST</guid>
+</item>
+</channel>
+</rss>
+
+<!-- fan1597.sports.bf1.yahoo.com Wed Jul 22 22:18:04 PDT 2015 -->
