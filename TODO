@@ -2,11 +2,14 @@
 
 * Write a manpage
 
-* Maybe: Make "weather" accept a database file, e.g. "~/.weather-places"
+* Make "weather" accept a database file, e.g. "~/.weather-places"
   of place names and WOEIDs into the configuration
   file so that weather can be called with a place name.
   The first entry should be the default location.
 
-* Maybe: Write a utility to populate this database.
+* Environment variable WEATHER_PLACES for the location of the
+  database file. Default is "~/.weather-places".
+
+* Write a utility to populate this database.
   This utility should also list the entries in the database and
   check for illegal entries. Line beginning with # are comments.
