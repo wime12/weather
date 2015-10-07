@@ -1,0 +1,5 @@
+* Write Makefile
+* Write manpage
+* Make location selectable
+* Add environment variable for default location
+* Maybe: add configuration file for default location
