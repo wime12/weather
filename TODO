@@ -2,7 +2,7 @@
 
 * Write a manpage
 
-* Maybe: Make "weather" accept a database file, e.g. "~/.weather-data"
+* Maybe: Make "weather" accept a database file, e.g. "~/.weather-places"
   of place names and WOEIDs into the configuration
   file so that weather can be called with a place name.
 
