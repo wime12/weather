@@ -1,5 +1,11 @@
-* Write Makefile
-* Write manpage
-* Make location selectable
-* Add environment variable for default location
-* Maybe: add configuration file for default location
+* Write a Makefile
+
+* Write a manpage
+
+* Maybe: Make "weather" accept a database file, e.g. "~/.weather-data"
+  of place names and WOEIDs into the configuration
+  file so that weather can be called with a place name.
+
+* Maybe: Write a utility to populate this database.
+  This utility should also list the entries in the database and
+  check for illegal entries. Line beginning with # are comments.
