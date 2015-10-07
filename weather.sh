@@ -1,6 +1,7 @@
 #!/bin/sh
 
-AWKLIB=~/.awklib
+AWKLIB=/usr/local/share/awklib
+AWKFILE_DIR=/usr/local/share/weather
 
 # Trieching
 # WEATHER_LOCATION=700017
@@ -19,4 +20,4 @@ WEATHER_UNIT="c"
 ping -q -c 1 "weather.yahooapis.com" 1>/dev/null || exit 1
 
 fetch -q -o - "http://weather.yahooapis.com/forecastrss?w=${WEATHER_LOCATION}&u=${WEATHER_UNIT}" | \
-awk -f $AWKLIB/getxml.awk -f $AWKLIB/weather.awk /dev/stdin
+awk -f $AWKLIB/getxml.awk -f $AWKFILE_DIR/weather.awk /dev/stdin
