@@ -4,7 +4,6 @@ AWKLIB=/usr/local/share/awklib
 AWKFILE_DIR=/usr/local/share/weather
 WEATHERRC=~/.weatherrc
 
-WEATHER_UNIT="c"
 WEATHER_WOEID=""
 
 usage() {
@@ -27,10 +26,12 @@ if [ ! -f "$WEATHERRC" ]; then
     exit 1
 fi
 
-line=$(egrep -m 1 '^[[:blank:]]*unit[[:blank:]]+[cf][[:blank:]]*$'
-if [ -n "line" ]; then
-    WEATHER_UNIT=$(echo "$line" | egrep -o "[cf][[:blank:]]*$")
-    WEATHER_UNIT=${WEATHER_UNIT%%[!cf]}
+if [ -n "$WEATHER_UNIT" ]; then
+    line=$(egrep -m 1 '^[[:blank:]]*unit[[:blank:]]+[cf][[:blank:]]*$')
+    if [ -n "line" ]; then
+        WEATHER_UNIT=$(echo "$line" | egrep -o "[cf][[:blank:]]*$")
+        WEATHER_UNIT=${WEATHER_UNIT%%[!cf]}
+    fi
 fi
 
 # TODO: Do not read location from configuration file if WOEID is set
@@ -39,7 +40,7 @@ case $# in
             "$WEATHERRC")
         if [ -z "$line" ]; then
             echo "$0: no default location found in $WEATHERRC" >&2
-	    exit 1
+            exit 1
         else
             woeid=$(echo $line | egrep -o "[0-9]+[[:blank:]]*$")
             woeid=${woeid%%[!0-9]*}
@@ -55,14 +56,16 @@ case $# in
                 woeid=${woeid%%[!0-9]*}
             else
                 echo "$0: location \"$1\" not found" >&2
-		exit 1
+                exit 1
             fi
         fi
         ;;
     *)  echo "$0: too many arguments" >&2
         usage
-	exit 1
+        exit 1
 esac
+
+WEATHER_UNIT=${WEATHER_UNIT:-c}
 
 # fetch -q -o -
 curl -m 4 -s "http://weather.yahooapis.com/forecastrss?w=${woeid}&u=${WEATHER_UNIT}" | \
