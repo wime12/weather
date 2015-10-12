@@ -4,13 +4,14 @@ PREFIX=/usr/local
 
 BINDIR=$(PREFIX)/bin
 AWKLIB=$(PREFIX)/share/awklib
+SHLIB=$(PREFIX)/share/shlib
 AWKFILE_DIR=$(PREFIX)/share/weather
 MANDIR=$(PREFIX)/share/man/man1
 
 # END of custom lines
 
 install:
-	sed "s#AWKLIB=.*#AWKLIB=$$\{AWKLIB:-$(AWKLIB)\}#;s#AWKFILE_DIR=.*#AWKFILE_DIR=$$\{AWKFILE_DIR:-$(AWKFILE_DIR)\}#" < weather.sh > weather.sh.new
+	sed "s#AWKLIB=.*#AWKLIB=$$\{AWKLIB:-$(AWKLIB)\}#;s#SHLIB=.*#SHLIB=$$\{SHLIB:-$(SHLIB)\}#;s#AWKFILE_DIR=.*#AWKFILE_DIR=$$\{AWKFILE_DIR:-$(AWKFILE_DIR)\}#" < weather.sh > weather.sh.new
 	test -d $(BINDIR) || mkdir -p $(BINDIR)
 	install -m 0755 weather.sh.new $(BINDIR)/weather
 	rm weather.sh.new

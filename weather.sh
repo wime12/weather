@@ -2,68 +2,90 @@
 
 AWKLIB=/usr/local/share/awklib
 AWKFILE_DIR=/usr/local/share/weather
+SHLIB=/usr/local/share/shlib
 WEATHERRC=~/.weatherrc
 
 WEATHER_WOEID=""
+
+. $SHLIB/isnumber.sh
 
 usage() {
     echo "$0 [-f rcfile] [-u unit] [woeid|place]"
 }
 
+search_woeid() {
+    if [ $4 == $5 ]; then
+	woeid=${woeid:-$3}
+    fi
+}
+
+first_woeid() {
+    woeid=${woeid:-$3}
+}
+
+readrc() { # arguments: $1 = function, $2 = data
+    while read token data rest; do
+	case $token in
+	    woeid) $1 token data rest $2
+		;;
+	    unit)
+		unit=${unit:-$data}
+	esac
+    done < "$rcfile"
+}
+
+# Command line processing
+
+rcfile="$WEATHERRC"
+unit="$WEATHER_UNIT"
+
 while getopts f:u: opt; do
     case $opt in
-        f) WEATHERRC=$OPTARG
+        f)  if [ ! -f "$OPTARG" ]; then
+		echo "$1: Could not find configuration file $OPTARG" >&2
+		exit 1
+	    fi
+	    rcfile=$OPTARG
             ;;
-        u) WEATHER_UNIT=$OPTARG
+        u)  if [ $OPTARG != "c" ] || [ $OPTARG != "f" ]; then
+		echo "$1: Wrong unit, can only be 'c' or 'f'." >&2
+		exit 1
+	    fi
+	    unit=$OPTARG
             ;;
     esac
 done
 
 shift $((OPTIND - 1))
 
+case # in
+    0)  woeid=$(readrc first_woeid)
+	if [ -n $woeid ]; then
+	    "$1: No default WOEID found in configuration file."
+	    exit 1
+	fi
+	;;
+    1)	if only_digits $1; then
+	    woeid=$1
+	else
+	    woeid=$(readrc search_woeid $1)
+	    if [ -n $woeid ]; then
+		"$1: Could not find WOEID of '$1' in configuration file."
+		exit 1
+	    fi
+	fi
+	;;
+    *)  echo "$1: Wrong number of arguments" >&2
+        usage
+	exit 1
+esac
+
 if [ ! -f "$WEATHERRC" ]; then
     echo "$0: configuration file $WEATHERRC not found"
     exit 1
 fi
 
-if [ -n "$WEATHER_UNIT" ]; then
-    line=$(egrep -m 1 '^[[:blank:]]*unit[[:blank:]]+[cf][[:blank:]]*$')
-    if [ -n "line" ]; then
-        WEATHER_UNIT=$(echo "$line" | egrep -o "[cf][[:blank:]]*$")
-        WEATHER_UNIT=${WEATHER_UNIT%%[!cf]}
-    fi
-fi
-
-# TODO: Do not read location from configuration file if WOEID is set
-case $# in
-    0)  line=$(egrep -m 1 '^[[:blank:]]*place[[:blank:]]+.*[0-9]+[[:blank:]]*$' \
-            "$WEATHERRC")
-        if [ -z "$line" ]; then
-            echo "$0: no default location found in $WEATHERRC" >&2
-            exit 1
-        else
-            woeid=$(echo $line | egrep -o "[0-9]+[[:blank:]]*$")
-            woeid=${woeid%%[!0-9]*}
-        fi
-        ;;
-    1)  if echo $1 | egrep -q "^[0-9]+$"; then
-            woeid=$1
-        else
-            line=$(egrep "^[[:blank:]]*place[[:blank:]]+$1[[:blank:]]+[0-9]+[[:blank:]]*$" \
-                "$WEATHERRC")
-            if [ -n "$line" ]; then
-                woeid=$(echo $line | egrep -o "[0-9]+[[:blank:]]*$")
-                woeid=${woeid%%[!0-9]*}
-            else
-                echo "$0: location \"$1\" not found" >&2
-                exit 1
-            fi
-        fi
-        ;;
-    *)  echo "$0: too many arguments" >&2
-        usage
-        exit 1
-esac
+if [ -n $unit ] && [ -n $woeid ]; then
 
 WEATHER_UNIT=${WEATHER_UNIT:-c}
 
