@@ -10,7 +10,7 @@ WEATHER_WOEID=""
 . $SHLIB/isnumber.sh
 
 usage() {
-    echo "$0 [-f rcfile] [-u unit] [woeid|place]"
+    echo "$0 [-f rcfile] [-u unit] [woeid|place]" >&2
 }
 
 search_woeid() {
@@ -26,7 +26,8 @@ first_woeid() {
 readrc() { # arguments: $1 = function, $2 = data
     while read token data rest; do
 	case $token in
-	    woeid) $1 token data rest $2
+	    woeid)
+		$1 token data rest $2
 		;;
 	    unit)
 		unit=${unit:-$data}
@@ -41,47 +42,48 @@ unit="$WEATHER_UNIT"
 
 while getopts f:u: opt; do
     case $opt in
-        f)  if [ ! -f "$OPTARG" ]; then
-		echo "$1: Could not find configuration file $OPTARG" >&2
+	f)  if [ ! -f "$OPTARG" ]; then
+	       	echo "$0: Could not find configuration file $OPTARG" >&2
 		exit 1
 	    fi
 	    rcfile=$OPTARG
-            ;;
-        u)  if [ $OPTARG != "c" ] || [ $OPTARG != "f" ]; then
-		echo "$1: Wrong unit, can only be 'c' or 'f'." >&2
+	    ;;
+	u)  if [ $OPTARG != "c" ] || [ $OPTARG != "f" ]; then
+		echo "$0: Wrong unit, can only be 'c' or 'f'." >&2
 		exit 1
 	    fi
 	    unit=$OPTARG
-            ;;
+	    ;;
+	\?) echo "$0: Invalid option: -$OPTARG" >&2
     esac
 done
 
 shift $((OPTIND - 1))
 
-case # in
+case $# in
     0)  woeid=$(readrc first_woeid)
 	if [ -n $woeid ]; then
-	    "$1: No default WOEID found in configuration file."
+	    echo "$0: No default WOEID found in configuration file." >&2
 	    exit 1
 	fi
 	;;
-    1)	if only_digits $1; then
+    1)  if only_digits $1; then
 	    woeid=$1
 	else
 	    woeid=$(readrc search_woeid $1)
 	    if [ -n $woeid ]; then
-		"$1: Could not find WOEID of '$1' in configuration file."
+		echo "$0: Could not find WOEID of '$1' in configuration file." >&2
 		exit 1
 	    fi
 	fi
 	;;
-    *)  echo "$1: Wrong number of arguments" >&2
+    *)  echo "$0: Wrong number of arguments" >&2
         usage
 	exit 1
 esac
 
 if [ ! -f "$WEATHERRC" ]; then
-    echo "$0: configuration file $WEATHERRC not found"
+    echo "$0: configuration file $WEATHERRC not found" >&2
     exit 1
 fi
 
