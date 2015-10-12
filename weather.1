@@ -1,0 +1,94 @@
+.\" Manpage for location
+.\" Contact wilfried.meindl@gmail.com to correct errors or typos.
+.\" Sections: NAME, SYNOPSIS, DESCRIPTION, OPTIONS, RETURN VALUES
+.\"           ENVIRONMENT, FILES, EXAMPLES, DIAGNOSTICS, ERRORS,
+.\"           SEE ALSO, STANDARDS, BUGS, SECURITY CONSIDERATIONS,
+.\"           other
+.TH man 1 "05 October 2015" "1.0" "location man page"
+.SH NAME
+location \- search information about a geographical place
+.SH SYNOPSIS
+.SY location
+.OP \-h
+.OP \-s separator
+.I location
+.SH DESCRIPTION
+.B location
+queries the Yahoo! database for information about a geographical place.
+\fIlocation\fP is a string specifying what to search for.  It can
+contain a city or country name, a zip code etc.  Also combinations like
+"Springfield, Missoury" are possible.  It displays the name of the
+location, the state, the country, the latitude, the longitude and the
+WOEID (Where On Earth IDentifier).  A request can have multiple results.
+.SH OPTIONS
+.TP
+.B \-h
+Print the results in a more human readable format.
+.TP
+.BI "\-s " separator
+Specifies the field separator.
+It has no effect if the \fB\-h\fP option is used.
+.SH ENVIRONMENT
+.TP
+.B AWKLIB
+The path where the awk files are found.
+By default set to $HOME/.awklib.
+See also section
+.BR FILES .
+.SH FILES
+.TP
+getxml.awk
+The XML parsing library.
+.TP
+location.awk
+The parsing routines for location data.
+.SH EXAMPLES
+1. Search for New York.
+Display the result in human readable format.
+.PP
+.EX
+.RS 4
+$ location -h "New York"
+1. New York, New York, United States
+        Zip: 10007
+        Latitude: 40.71455, Longitude: -74.00714
+        WOEID: 2459115
+.RE
+.EE
+.PP
+2. Display the same result in easily parsable form.
+.PP
+.EX
+.RS 4
+$ location "New York"
+1|New York|New York|United States|10007|40.71455|...
+.RE
+.EE
+.PP
+3. Now with tabs as delimiters.
+.PP
+.EX
+.RS 4
+$ location -s "\\t" "New York"
+1	New York	New York	United States	10007...
+.RE
+.EE
+.PP
+4. A query with multiple results
+.PP
+.EX
+.RS 4
+$ location Springfield
+1|Springfield|Missouri|United States|65806|37.20897|...
+2|Springfield|Massachusetts|United States|01103|...
+3|Springfield|Illinois|United States|62701|39.80106|...
+4|Springfield|Ohio|United States|45502|39.92503|...
+\&...
+.RE
+.EE
+.SH SEE ALSO
+weather(1)
+.SH BUGS
+No known bugs.
+.SH AUTHOR
+Wilfried Meindl <wilfried.meindl@gmail.com>
