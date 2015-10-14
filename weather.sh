@@ -24,24 +24,21 @@ first_woeid() {
 }
 
 readrc() { # arguments: $1 = function, $2 = data
-    local rc_woeid rc_unit
-    while [ -z "$rc_woeid" ] || [ -z "$rc_unit" ] && read token data rest; do
+    while ( [ -z "$rc_woeid" ] || [ -z "$rc_unit" ] && read token data rest ) ; do
 	echo $token $data $rest
 	case "$token" in
 	    woeid)
-		rc_woeid=$($1 token data rest "$2")
+		rc_woeid=$($1 $token $data "$rest" "$2")
 		;;
 	    unit)
 		rc_unit=$data
 	esac
     done < "$rcfile"
-    # TODO: return woeid and unit (assignment or echo?)
 }
 
 # Command line processing
 
 rcfile="$WEATHERRC"
-unit="$WEATHER_UNIT"
 
 while getopts f:u: opt; do
     case $opt in
@@ -51,7 +48,7 @@ while getopts f:u: opt; do
 	    fi
 	    rcfile=$OPTARG
 	    ;;
-	u)  if [ $OPTARG != "c" ] || [ $OPTARG != "f" ]; then
+	u)  if ( [ $OPTARG != "c" ] && [ $OPTARG != "f" ] ); then
 		echo "$0: Wrong unit, can only be 'c' or 'f'." >&2
 		exit 1
 	    fi
@@ -64,19 +61,23 @@ done
 shift $((OPTIND - 1))
 
 case $# in
-    0)  woeid=$(readrc first_woeid)
-	if [ -n "$woeid" ]; then
+    0)  readrc first_woeid
+	if [ -z "$rc_woeid" ]; then
 	    echo "$0: No default WOEID found in configuration file." >&2
 	    exit 1
+	else
+	    woeid="$rc_woeid"
 	fi
 	;;
     1)  if only_digits "$1"; then
 	    woeid="$1"
 	else
-	    woeid=$(readrc search_woeid $1)
-	    if [ -n "$woeid" ]; then
+	    readrc search_woeid $1
+	    if [ -z "$rc_woeid" ]; then
 		echo "$0: Could not find WOEID of '$1' in configuration file." >&2
 		exit 1
+	    else
+		woeid="$1"
 	    fi
 	fi
 	;;
@@ -85,8 +86,10 @@ case $# in
 	exit 1
 esac
 
-WEATHER_UNIT=${WEATHER_UNIT:-c}
+unit=${unit:-$rc_unit}
+unit=${unit:-c}
 
 # curl -m 4 -s "http://weather.yahooapis.com/forecastrss?w=${woeid}&u=${WEATHER_UNIT}" | \
-fetch -q -o - | \
+fetch -q -o - \
+ "http://weather.yahooapis.com/forecastrss?w=${woeid}&u=${unit}" | \
 awk -f $AWKLIB/getxml.awk -f $AWKFILE_DIR/weather.awk /dev/stdin
