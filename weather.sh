@@ -14,25 +14,28 @@ usage() {
 }
 
 search_woeid() {
-    if [ $4 == $5 ]; then
-	woeid=${woeid:-$3}
+    if [ "$3" == "$4" ]; then
+	echo "$2"
     fi
 }
 
 first_woeid() {
-    woeid=${woeid:-$3}
+    echo "$2"
 }
 
 readrc() { # arguments: $1 = function, $2 = data
-    while read token data rest; do
-	case $token in
+    local rc_woeid rc_unit
+    while [ -z "$rc_woeid" ] || [ -z "$rc_unit" ] && read token data rest; do
+	echo $token $data $rest
+	case "$token" in
 	    woeid)
-		$1 token data rest $2
+		rc_woeid=$($1 token data rest "$2")
 		;;
 	    unit)
-		unit=${unit:-$data}
+		rc_unit=$data
 	esac
     done < "$rcfile"
+    # TODO: return woeid and unit (assignment or echo?)
 }
 
 # Command line processing
@@ -62,16 +65,16 @@ shift $((OPTIND - 1))
 
 case $# in
     0)  woeid=$(readrc first_woeid)
-	if [ -n $woeid ]; then
+	if [ -n "$woeid" ]; then
 	    echo "$0: No default WOEID found in configuration file." >&2
 	    exit 1
 	fi
 	;;
-    1)  if only_digits $1; then
-	    woeid=$1
+    1)  if only_digits "$1"; then
+	    woeid="$1"
 	else
 	    woeid=$(readrc search_woeid $1)
-	    if [ -n $woeid ]; then
+	    if [ -n "$woeid" ]; then
 		echo "$0: Could not find WOEID of '$1' in configuration file." >&2
 		exit 1
 	    fi
@@ -82,15 +85,8 @@ case $# in
 	exit 1
 esac
 
-if [ ! -f "$WEATHERRC" ]; then
-    echo "$0: configuration file $WEATHERRC not found" >&2
-    exit 1
-fi
-
-if [ -n $unit ] && [ -n $woeid ]; then
-
 WEATHER_UNIT=${WEATHER_UNIT:-c}
 
-# fetch -q -o -
-curl -m 4 -s "http://weather.yahooapis.com/forecastrss?w=${woeid}&u=${WEATHER_UNIT}" | \
+# curl -m 4 -s "http://weather.yahooapis.com/forecastrss?w=${woeid}&u=${WEATHER_UNIT}" | \
+fetch -q -o - | \
 awk -f $AWKLIB/getxml.awk -f $AWKFILE_DIR/weather.awk /dev/stdin
