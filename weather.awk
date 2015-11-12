@@ -19,24 +19,48 @@ BEGIN {
     }
   }
 
-  printf("Weather report for %s, %s, %s:\n", data["location", "city"],
-	 data["location", "country"], data["condition", "date"])
-  printf("Condition:\t%s °%s, %s\n", data["condition", "temp"], data["units", "temperature"],
-	 data["condition", "text"])
-  printf("Wind:\t\t%s %s %s, %s °%s\n", data["wind", "speed"], data["units", "speed"],
-	 wind_direction(data["wind", "direction"]), data["wind", "chill"],
-	 data["units", "temperature"])
-  printf("Atmosphere:\t%s%%, %s %s %s\n", data["atmosphere", "humidity"],
-	 data["atmosphere", "pressure"], data["units", "pressure"],
-	 pressure_direction(data["atmosphere", "rising"]))
-  printf("Sun:\t\t%s - %s\n", data["astronomy", "sunrise"], data["astronomy", "sunset"])
-  printf("Forecast:\n")
-  for (i = 1; i <= 5; i++) {
-    printf("\t%s, %s: %s °%s - %s °%s, %s\n",
-	   data["forecast", i, "day"], data["forecast_" i, "date"],
-	   data["forecast", i, "low"], data["units", "temperature"],
-	   data["forecast", i, "high"], data["units", "temperature"],
-	   data["forecast", i, "text"])
+  if (computer_readable) {
+      OFS=";"
+      print "location", data["location", "city"], data["location", "region"],
+            data["location", "country"]
+      print "units", data["units", "temperature"], data["units", "distance"],
+            data["units", "pressure"], data["units", "speed"]
+      print "condition", data["condition", "date"], data["condition", "temp"],
+            data["condition", "text"], data["condition", "code"]
+      print "wind", data["wind", "chill"], data["wind", "direction"], 
+            wind_direction(data["wind", "direction"]), data["wind", "speed"]
+      print "atmosphere", data["atmosphere", "humidity"],
+            data["atmosphere", "visibility"], data["atmosphere", "pressure"],
+            data["atmosphere", "rising"]
+      print "astronomy", data["astronomy", "sunrise"],
+            data["astronomy", "sunset"]
+      for (i = 1; i <= 5; i++) {
+          print "forecast_" i, data["forecast", i, "day"],
+                data["forecast", i, "date"], data["forecast", i,"low"],
+                data["forecast", i, "high"], data["forecast", i, "text"],
+                data["forecast", i, "code"]
+      }
+  } else {
+      printf "Weather report for %s, %s, %s:\n", data["location", "city"],
+             data["location", "country"], data["condition", "date"]
+      printf "Condition:\t%s °%s, %s\n", data["condition", "temp"],
+             data["units", "temperature"], data["condition", "text"]
+      printf "Wind:\t\t%s %s %s, %s °%s\n", data["wind", "speed"],
+             data["units", "speed"], wind_direction(data["wind", "direction"]),
+             data["wind", "chill"], data["units", "temperature"]
+      printf "Atmosphere:\t%s%%, %s %s %s\n", data["atmosphere", "humidity"],
+             data["atmosphere", "pressure"], data["units", "pressure"],
+             pressure_direction(data["atmosphere", "rising"])
+      printf "Sun:\t\t%s - %s\n", data["astronomy", "sunrise"],
+             data["astronomy", "sunset"]
+      printf("Forecast:\n")
+      for (i = 1; i <= 5; i++) {
+          printf("\t%s, %s: %s °%s - %s °%s, %s\n",
+                 data["forecast", i, "day"], data["forecast_" i, "date"],
+                 data["forecast", i, "low"], data["units", "temperature"],
+                 data["forecast", i, "high"], data["units", "temperature"],
+                 data["forecast", i, "text"])
+      }
   }
 }
 

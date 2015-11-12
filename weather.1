@@ -4,14 +4,16 @@
 .\"           ENVIRONMENT, FILES, EXAMPLES, DIAGNOSTICS, ERRORS,
 .\"           SEE ALSO, STANDARDS, BUGS, SECURITY CONSIDERATIONS,
 .\"           other
-.TH man 1 "05 October 2015" "1.0" "location man page"
+.TH man 1 "12 November 2015" "1.0" "weather man page"
 .SH NAME
-location \- search information about a geographical place
+weather \- display the current weather conditions and a five day forecast
 .SH SYNOPSIS
-.SY location
+.SY weather
 .OP \-h
-.OP \-s separator
-.I location
+.OP \-c
+.OP \-f rcfile
+.OP \-u unit
+.OP woeid|place
 .SH DESCRIPTION
 .B location
 queries the Yahoo! database for information about a geographical place.
