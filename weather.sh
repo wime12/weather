@@ -88,8 +88,12 @@ if [ -z $woeid ]; then
     fi
 fi
 
-if [ -z woeid ]; then
-    echo "No WOEID given."
+if [ -z $woeid ]; then
+    if [ -n "$location_name" ]; then
+	echo "$0: location \"$location_name\" unknown" >&2
+    else
+	echo "$0: No default location in configuration file \"$rcfile\"" >&2
+    fi
     exit 1
 fi
 
@@ -99,4 +103,5 @@ unit=${unit:-c}
 # fetch -q -o - \
 curl -m 4 -s \
  "http://weather.yahooapis.com/forecastrss?w=${woeid}&u=${unit}" | \
-awk -f $AWKLIB/getxml.awk -v computer_readable=1 -f $AWKFILE_DIR/weather.awk /dev/stdin
+awk -v computer_readable="$computer_readable" -f $AWKLIB/getxml.awk \
+    -f $AWKFILE_DIR/weather.awk /dev/stdin
