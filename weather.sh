@@ -5,8 +5,6 @@ AWKFILE_DIR=/usr/local/share/weather
 SHLIB=/usr/local/share/shlib
 WEATHERRC=~/.weatherrc
 
-WEATHER_WOEID=""
-
 . $SHLIB/isnumber.sh
 
 usage() {
@@ -21,8 +19,8 @@ readrc() { # arguments: $1 = location name
 		rc_default=$data
 		;;
 	    location)
-		if [ "$rest" == "$1" ]; then
-		    rc_location=$data
+		if [ "$rest" = "$1" ]; then
+		    rc_woeid=$data
 		fi
 		;;
 	    unit)
