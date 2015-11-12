@@ -8,7 +8,7 @@ WEATHERRC=~/.weatherrc
 . $SHLIB/isnumber.sh
 
 usage() {
-    echo "$0 [-f rcfile] [-u unit] [woeid|place]" >&2
+    echo "$0 [-h] [-f rcfile] [-u unit] [woeid|place]" >&2
 }
 
 readrc() { # arguments: $1 = location name
@@ -35,19 +35,18 @@ readrc() { # arguments: $1 = location name
 
 rcfile="$WEATHERRC"
 
-while getopts f:u: opt; do
+while getopts f:u:h opt; do
     case $opt in
-	f)  if [ ! -f "$OPTARG" ]; then
-	       	echo "$0: Could not find configuration file $OPTARG" >&2
-		exit 1
-	    fi
-	    rcfile=$OPTARG
+	f)  rcfile=$OPTARG
 	    ;;
 	u)  if ( [ $OPTARG != "c" ] && [ $OPTARG != "f" ] ); then
 		echo "$0: Wrong unit, can only be 'c' or 'f'." >&2
 		exit 1
 	    fi
 	    unit=$OPTARG
+	    ;;
+	h)  usage
+	    exit 0
 	    ;;
 	\?) echo "$0: Invalid option: -$OPTARG" >&2
 	    usage
@@ -73,6 +72,10 @@ case $# in
 esac
 
 if [ -z $woeid ] || [ -z $unit ]; then
+    if [ ! -f "$rcfile" ]; then
+	echo "$0: Could not find configuration file $rcfile" >&2
+	exit 1
+    fi
     readrc "$location_name" < "$rcfile"
     woeid=${woeid:-$rc_woeid}
 fi
@@ -92,8 +95,6 @@ fi
 
 unit=${unit:-$rc_unit}
 unit=${unit:-c}
-
-echo "Unit: " $unit "WOEID: " $woeid
 
 # fetch -q -o - \
 curl -m 4 -s \
