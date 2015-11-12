@@ -1,13 +1,13 @@
-* Write a Makefile
+* DONE Write a Makefile
 
 * Write a manpage
 
-* Make "weather" accept a resource file, e.g. "~/.weatherrc"
+* DONE Make "weather" accept a resource file, e.g. "~/.weatherrc"
   of place names and WOEIDs into the configuration
   file so that weather can be called with a place name.
   The first entry should be the default location.
 
-* Environment variable WEATHER_PLACES for the location of the
+* CANCELLED Environment variable WEATHER_PLACES for the location of the
   database file. Default is "~/.weatherrc".
 
 * Write a utility to populate this database.
