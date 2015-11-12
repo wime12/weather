@@ -9,7 +9,7 @@ rcfile=~/.weatherrc
 . $SHLIB/isnumber.sh
 
 usage() {
-    echo "$0 [-h] [-f rcfile] [-u unit] [woeid|place]" >&2
+    echo "$0 [-h] [-c] [-f rcfile] [-u unit] [woeid|place]" >&2
 }
 
 readrc() { # arguments: $1 = location name
@@ -34,7 +34,7 @@ readrc() { # arguments: $1 = location name
 
 # Command line processing
 
-while getopts f:u:h opt; do
+while getopts f:u:hc opt; do
     case $opt in
 	f)  rcfile=$OPTARG
 	    ;;
@@ -46,6 +46,8 @@ while getopts f:u:h opt; do
 	    ;;
 	h)  usage
 	    exit 0
+	    ;;
+	c)  computer_readable=yes
 	    ;;
 	\?) echo "$0: Invalid option: -$OPTARG" >&2
 	    usage
@@ -97,4 +99,4 @@ unit=${unit:-c}
 # fetch -q -o - \
 curl -m 4 -s \
  "http://weather.yahooapis.com/forecastrss?w=${woeid}&u=${unit}" | \
-awk -f $AWKLIB/getxml.awk -f $AWKFILE_DIR/weather.awk /dev/stdin
+awk -f $AWKLIB/getxml.awk -v computer_readable=1 -f $AWKFILE_DIR/weather.awk /dev/stdin
