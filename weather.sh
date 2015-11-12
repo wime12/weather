@@ -13,27 +13,24 @@ usage() {
     echo "$0 [-f rcfile] [-u unit] [woeid|place]" >&2
 }
 
-search_woeid() {
-    if [ "$3" == "$4" ]; then
-	echo "$2"
-    fi
-}
-
-first_woeid() {
-    echo "$2"
-}
-
-readrc() { # arguments: $1 = function, $2 = data
-    while ( [ -z "$rc_woeid" ] || [ -z "$rc_unit" ] && read token data rest ) ; do
-	echo $token $data $rest
-	case "$token" in
-	    woeid)
-		rc_woeid=$($1 $token $data "$rest" "$2")
+readrc() { # arguments: $1 = location name
+    while read token data rest
+    do
+	case $token in
+	    default)
+		rc_default=$data
+		;;
+	    location)
+		if [ "$rest" == "$1" ]; then
+		    rc_location=$data
+		fi
 		;;
 	    unit)
 		rc_unit=$data
+		;;
+	    *) ;;
 	esac
-    done < "$rcfile"
+    done
 }
 
 # Command line processing
@@ -55,41 +52,52 @@ while getopts f:u: opt; do
 	    unit=$OPTARG
 	    ;;
 	\?) echo "$0: Invalid option: -$OPTARG" >&2
+	    usage
+	    exit 1
     esac
 done
 
 shift $((OPTIND - 1))
 
 case $# in
-    0)  readrc first_woeid
-	if [ -z "$rc_woeid" ]; then
-	    echo "$0: No default WOEID found in configuration file." >&2
-	    exit 1
-	else
-	    woeid="$rc_woeid"
+    0)
+	;;
+    1)
+	if only_digits "$1"
+	then woeid=$1
+	else location_name="$1"
 	fi
 	;;
-    1)  if only_digits "$1"; then
-	    woeid="$1"
-	else
-	    readrc search_woeid $1
-	    if [ -z "$rc_woeid" ]; then
-		echo "$0: Could not find WOEID of '$1' in configuration file." >&2
-		exit 1
-	    else
-		woeid="$1"
-	    fi
-	fi
-	;;
-    *)  echo "$0: Wrong number of arguments" >&2
-        usage
+    *)
+	echo "Wrong number of arguments" >&2
+	usage
 	exit 1
 esac
+
+if [ -z $woeid ] || [ -z $unit ]; then
+    readrc "$location_name" < "$rcfile"
+    woeid=${woeid:-$rc_woeid}
+fi
+
+if [ -z $woeid ]; then
+    if [ -n "$location_name" ]; then
+	woeid=$rc_woeid
+    else
+	woeid=$rc_default
+    fi
+fi
+
+if [ -z woeid ]; then
+    echo "No WOEID given."
+    exit 1
+fi
 
 unit=${unit:-$rc_unit}
 unit=${unit:-c}
 
-# curl -m 4 -s "http://weather.yahooapis.com/forecastrss?w=${woeid}&u=${WEATHER_UNIT}" | \
-fetch -q -o - \
+echo "Unit: " $unit "WOEID: " $woeid
+
+# fetch -q -o - \
+curl -m 4 -s \
  "http://weather.yahooapis.com/forecastrss?w=${woeid}&u=${unit}" | \
 awk -f $AWKLIB/getxml.awk -f $AWKFILE_DIR/weather.awk /dev/stdin
