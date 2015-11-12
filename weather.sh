@@ -3,7 +3,8 @@
 AWKLIB=/usr/local/share/awklib
 AWKFILE_DIR=/usr/local/share/weather
 SHLIB=/usr/local/share/shlib
-WEATHERRC=~/.weatherrc
+
+rcfile=~/.weatherrc
 
 . $SHLIB/isnumber.sh
 
@@ -32,8 +33,6 @@ readrc() { # arguments: $1 = location name
 }
 
 # Command line processing
-
-rcfile="$WEATHERRC"
 
 while getopts f:u:h opt; do
     case $opt in
@@ -77,7 +76,6 @@ if [ -z $woeid ] || [ -z $unit ]; then
 	exit 1
     fi
     readrc "$location_name" < "$rcfile"
-    woeid=${woeid:-$rc_woeid}
 fi
 
 if [ -z $woeid ]; then
