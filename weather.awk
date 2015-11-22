@@ -13,6 +13,10 @@ BEGIN {
 	  for (attributeName in XATTR)
 	    data[tagName,attributeName] = XATTR[attributeName];
     }
+    if (XTYPE == "TAG" && XITEM ~ /^ttl/ &&
+	getXML(ARGV[1], 0) && XTYPE == "DAT") {
+	data["cache"] = XITEM
+    }
     if (XERROR) {
       print "Parsing error"
       exit 1
@@ -21,6 +25,7 @@ BEGIN {
 
   if (computer_readable) {
       OFS=";"
+      print "cache", data["cache"]
       print "location", data["location", "city"], data["location", "region"],
             data["location", "country"]
       print "units", data["units", "temperature"], data["units", "distance"],

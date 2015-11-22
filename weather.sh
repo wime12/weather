@@ -100,8 +100,8 @@ fi
 unit=${unit:-$rc_unit}
 unit=${unit:-c}
 
-# fetch -q -o - \
-curl -m 4 -s \
+fetch -q -o - \
  "http://weather.yahooapis.com/forecastrss?w=${woeid}&u=${unit}" | \
+ tee ~/weather.xml | \
 awk -v computer_readable="$computer_readable" -f $AWKLIB/getxml.awk \
     -f $AWKFILE_DIR/weather.awk /dev/stdin
